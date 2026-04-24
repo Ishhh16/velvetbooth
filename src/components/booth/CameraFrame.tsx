@@ -2,7 +2,7 @@ import { useRef, useCallback, useState } from 'react';
 import Webcam from 'react-webcam';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Camera, RotateCcw, Timer } from 'lucide-react';
-import { useBoothStore, type FilterType } from '@/store/boothStore';
+import { useBoothStore, type FilterType, type LayoutType } from '@/store/boothStore';
 
 const filterStyles: Record<FilterType, string> = {
   none: '',
@@ -10,6 +10,14 @@ const filterStyles: Record<FilterType, string> = {
   bw: 'grayscale(1) contrast(1.2)',
   sepia: 'sepia(0.8) contrast(1.1)',
   vhs: 'saturate(1.5) contrast(1.3) brightness(1.1) hue-rotate(5deg)',
+};
+
+const shotsPerLayout: Record<LayoutType, number> = {
+  single: 1,
+  'vertical-2': 2,
+  'strip-3': 3,
+  'grid-4': 4,
+  'grid-2x3': 6,
 };
 
 const playShutterSound = () => {
@@ -29,7 +37,7 @@ const playShutterSound = () => {
 
 const CameraFrame = () => {
   const webcamRef = useRef<Webcam>(null);
-  const { addPhoto, activeFilter, countdown, setCountdown, isCapturing, setIsCapturing } = useBoothStore();
+  const { addPhoto, activeFilter, selectedLayout, countdown, setCountdown, isCapturing, setIsCapturing } = useBoothStore();
   const [flash, setFlash] = useState(false);
 
   const capture = useCallback(() => {
@@ -77,7 +85,7 @@ const CameraFrame = () => {
   const startBurstMode = useCallback(() => {
     setIsCapturing(true);
     let shots = 0;
-    const total = 3;
+    const total = shotsPerLayout[selectedLayout];
 
     const takeShot = () => {
       let count = 3;
@@ -101,7 +109,7 @@ const CameraFrame = () => {
     };
 
     takeShot();
-  }, [capture, setCountdown, setIsCapturing]);
+  }, [capture, selectedLayout, setCountdown, setIsCapturing]);
 
   return (
     <div className="flex flex-col items-center gap-4">
@@ -166,7 +174,7 @@ const CameraFrame = () => {
           onClick={startBurstMode}
           disabled={isCapturing}
           className="w-12 h-12 rounded-full border-2 border-foreground text-foreground flex items-center justify-center disabled:opacity-50"
-          title="Burst mode (3 shots)"
+          title={`Burst mode (${shotsPerLayout[selectedLayout]} shots)`}
         >
           <Timer className="w-5 h-5" />
         </motion.button>

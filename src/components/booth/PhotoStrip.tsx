@@ -2,7 +2,7 @@ import { useRef, useState, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Download, X, Type, Trash2, Maximize2 } from 'lucide-react';
 import html2canvas from 'html2canvas';
-import { useBoothStore } from '@/store/boothStore';
+import { useBoothStore, type LayoutType } from '@/store/boothStore';
 
 const PhotoStrip = () => {
   const stripRef = useRef<HTMLDivElement>(null);
@@ -17,11 +17,12 @@ const PhotoStrip = () => {
   const [resizing, setResizing] = useState<string | null>(null);
   const [resizeStart, setResizeStart] = useState({ x: 0, y: 0, scale: 1, fontSize: 16 });
 
-  const requiredPhotos: Record<string, number> = {
+  const requiredPhotos: Record<LayoutType, number> = {
     single: 1,
     'vertical-2': 2,
     'strip-3': 3,
     'grid-4': 4,
+    'grid-2x3': 6,
   };
 
   const needed = requiredPhotos[selectedLayout];
@@ -41,11 +42,12 @@ const PhotoStrip = () => {
     link.click();
   };
 
-  const layoutClass: Record<string, string> = {
+  const layoutClass: Record<LayoutType, string> = {
     single: 'grid-cols-1',
     'vertical-2': 'grid-cols-1',
     'strip-3': 'grid-cols-1',
     'grid-4': 'grid-cols-2',
+    'grid-2x3': 'grid-cols-2',
   };
 
   const handleAddText = () => {
@@ -149,7 +151,7 @@ const PhotoStrip = () => {
         transition={{ type: 'spring', stiffness: 300, damping: 20 }}
         ref={stripRef}
         className="bg-primary-foreground p-4 rounded-sm vintage-shadow mx-auto inline-block relative"
-        style={{ maxWidth: selectedLayout === 'grid-4' ? 400 : 240 }}
+        style={{ maxWidth: selectedLayout === 'grid-4' || selectedLayout === 'grid-2x3' ? 400 : 240 }}
         onPointerMove={handlePointerMove}
         onPointerUp={handlePointerUp}
         onPointerLeave={handlePointerUp}

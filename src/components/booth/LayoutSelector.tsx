@@ -35,6 +35,17 @@ const layouts: { value: LayoutType; label: string; icon: React.ReactNode }[] = [
       </div>
     ),
   },
+  {
+    value: 'grid-2x3',
+    label: '2x3',
+    icon: (
+      <div className="grid grid-cols-2 gap-0.5">
+        {[0, 1, 2, 3, 4, 5].map((i) => (
+          <div key={i} className="w-2.5 h-2 border border-current rounded-[2px]" />
+        ))}
+      </div>
+    ),
+  },
 ];
 
 const LayoutSelector = () => {
@@ -43,14 +54,15 @@ const LayoutSelector = () => {
   return (
     <div>
       <p className="font-typewriter text-xs tracking-widest text-muted-foreground mb-3">✦ LAYOUT</p>
-      <div className="flex gap-2">
+      <div className="flex flex-wrap gap-2">
         {layouts.map((l) => (
           <motion.button
             key={l.value}
             whileHover={{ scale: 1.1 }}
             whileTap={{ scale: 0.9 }}
             onClick={() => setLayout(l.value)}
-            className={`w-14 h-14 rounded-sm border flex items-center justify-center transition-colors ${
+            aria-label={`Select ${l.label} layout`}
+            className={`w-12 h-12 sm:w-14 sm:h-14 rounded-sm border flex items-center justify-center transition-colors ${
               selectedLayout === l.value
                 ? 'bg-foreground text-primary-foreground border-foreground'
                 : 'border-border hover:border-foreground'
